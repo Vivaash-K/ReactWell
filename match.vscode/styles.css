@@ -1,0 +1,43 @@
+* {
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f8ff;
+  }
+  
+  #game-container {
+    text-align: center;
+  }
+  
+  .memory-game {
+    display: grid;
+    grid-template-columns: repeat(4, 100px);
+    grid-gap: 10px;
+    margin: 20px auto;
+  }
+  
+  .memory-card {
+    width: 100px;
+    height: 100px;
+    background-color: #2e8b57;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    color: white;
+  }
+  
+  .memory-card.flip {
+    background-color: white;
+    color: #2e8b57;
+  }
+  
