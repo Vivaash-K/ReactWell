@@ -1,12 +1,15 @@
 /* General Body Styles */
 body {
     font-family: 'Arial', sans-serif;
+    background-image: url('data/index_back.jpeg');
+    background-size: cover;      /* Ensures the image covers the whole page */
+    background-position: center; /* Centers the image */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: linear-gradient(135deg, #1e3c72, #2a5298);
     color: #f4f4f4;
 }
 
