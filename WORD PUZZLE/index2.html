@@ -4,12 +4,50 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Word Association Game</title>
+  <style>
+    /* Style to make canvas full screen */
+    body, html {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    #startButton {
+      display: block;
+      padding: 15px 30px;
+      font-size: 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    #wordCanvas {
+      display: none;
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
 </head>
 <body>
-<canvas id="wordCanvas" width="600" height="400"></canvas>
+
+<button id="startButton">Start Game</button>
+<canvas id="wordCanvas"></canvas>
+
 <script>
 const canvas2 = document.getElementById("wordCanvas");
 const ctx2 = canvas2.getContext("2d");
+canvas2.width = window.innerWidth;
+canvas2.height = window.innerHeight;
 
 // Background image for the canvas
 const background = new Image();
@@ -17,16 +55,16 @@ background.src = "background3.avif"; // Replace with the path to your background
 
 // Define objects with image paths instead of colors
 let objects = [
-  { name: " ", word: "Water", x: 50, y: 200, width: 80, height: 80, imageSrc: "water.avif" },
-  { name: " ", word: "Sun", x: 150, y: 200, width: 80, height: 80, imageSrc: "sun2.avif" },
-  { name: " ", word: "Tree", x: 250, y: 200, width: 80, height: 80, imageSrc: "tree.avif" },
-  { name: " ", word: "Flower", x: 350, y: 200, width: 80, height: 80, imageSrc: "flower.avif" },
-  { name: " ", word: "Rain", x: 450, y: 200, width: 80, height: 80, imageSrc: "rain.avif" },
-  { name: " ", word: "Garden", x: 50, y: 300, width: 80, height: 80, imageSrc: "garden2.avif" },
-  { name: " ", word: "Bird", x: 150, y: 300, width: 80, height: 80, imageSrc: "bird.avif" },
-  { name: " ", word: "Butterfly", x: 250, y: 300, width: 80, height: 80, imageSrc: "butterfly.avif" },
-  { name: " ", word: "Bees", x: 350, y: 300, width: 80, height: 80, imageSrc: "bee.avif" },
-  { name: " ", word: "Fountain", x: 450, y: 300, width: 80, height: 80, imageSrc: "fountain.avif" }
+  { name: "", word: "Water", imageSrc: "water.avif" },
+  { name: "", word: "Sun", imageSrc: "sun2.avif" },
+  { name: "", word: "Tree", imageSrc: "tree.avif" },
+  { name: "", word: "Flower", imageSrc: "flower.avif" },
+  { name: "", word: "Rain", imageSrc: "rain.avif" },
+  { name: "", word: "Garden", imageSrc: "garden2.avif" },
+  { name: "", word: "Bird", imageSrc: "bird.avif" },
+  { name: "", word: "Butterfly", imageSrc: "butterfly.avif" },
+  { name: "", word: "Bees", imageSrc: "bee.avif" },
+  { name: "", word: "Fountain", imageSrc: "fountain.avif" }
 ];
 
 // Initialize variables
@@ -57,19 +95,37 @@ function drawObjects() {
   ctx2.fillText(`Score: ${score2}`, 10, 30);
 
   if (gameActive2) {
-    ctx2.fillText(`Match the word: ${currentWord}`, 200, 50);
+    ctx2.fillText(`Match the word: ${currentWord}`, canvas2.width / 2 - 100, 50);
 
-    // Draw each object with its image and label
-    objects.forEach(obj => {
+    // Calculate grid layout for centered positioning
+    const columns = 5; // Number of images per row
+    const padding = 20; // Space between images
+    const imageSize = 80; // Image width and height
+    const totalWidth = columns * imageSize + (columns - 1) * padding;
+    let startX = (canvas2.width - totalWidth) / 2;
+    let startY = 150;
+
+    // Draw each object in grid layout with label
+    objects.forEach((obj, index) => {
+      const x = startX + (index % columns) * (imageSize + padding);
+      const y = startY + Math.floor(index / columns) * (imageSize + padding);
+
+      // Draw image and label
       if (obj.image.complete) {
-        ctx2.drawImage(obj.image, obj.x, obj.y, obj.width, obj.height);
+        ctx2.drawImage(obj.image, x, y, imageSize, imageSize);
       }
       ctx2.fillStyle = "black";
-      ctx2.fillText(obj.name, obj.x, obj.y + obj.height + 20);
+      ctx2.fillText(obj.name, x + 10, y + imageSize + 20);
+      
+      // Update object position properties
+      obj.x = x;
+      obj.y = y;
+      obj.width = imageSize;
+      obj.height = imageSize;
     });
   } else {
-    ctx2.fillText("Game Over!", 250, 150);
-    ctx2.fillText(`Final Score: ${score2}`, 250, 200);
+    ctx2.fillText("Game Over!", canvas2.width / 2 - 60, canvas2.height / 2 - 20);
+    ctx2.fillText(`Final Score: ${score2}`, canvas2.width / 2 - 80, canvas2.height / 2 + 20);
   }
 }
 
@@ -81,6 +137,8 @@ function generateWord() {
 
 // Start the game
 function startWordGame() {
+  document.getElementById("startButton").style.display = "none";
+  canvas2.style.display = "block";
   score2 = 0;
   gameActive2 = true;
   currentWord = generateWord();
@@ -112,10 +170,11 @@ canvas2.addEventListener("click", (event) => {
   checkSelection(x, y);
 });
 
-// Load images and start game
+// Load images and add event listener to start button
 loadImages();
-background.onload = startWordGame; // Start the game after the background loads
-
+background.onload = drawObjects;
+document.getElementById("startButton").addEventListener("click", startWordGame);
 </script>
+
 </body>
 </html>
