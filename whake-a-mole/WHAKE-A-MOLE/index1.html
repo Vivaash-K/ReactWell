@@ -4,15 +4,44 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Whack-a-Mole Style Game</title>
+  <style>
+    /* Full screen canvas */
+    #whackCanvas {
+      width: 100vw;
+      height: 100vh;
+      display: block;
+    }
+
+    /* Centered start button */
+    #startButton {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 15px 30px;
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    /* Hide start button during game */
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
 
 <button id="startButton">Start Game</button>
-<canvas id="whackCanvas" width="600" height="400"></canvas>
+<canvas id="whackCanvas"></canvas>
 
 <script>
 const canvas = document.getElementById("whackCanvas");
 const ctx = canvas.getContext("2d");
+
+// Resize canvas to full screen
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
 // Load background image
 const backgroundImage = new Image();
@@ -49,7 +78,7 @@ function drawFlowers() {
   // Display the score
   ctx.font = "20px Arial";
   ctx.fillStyle = "black";
-  ctx.fillText("Score: " + score, 10, 20);
+  ctx.fillText("Score: " + score, 10, 30);
 
   // Remove expired flowers and draw each flower
   const now = Date.now();
@@ -85,6 +114,7 @@ canvas.addEventListener("click", (event) => {
 function startWhackGame() {
   score = 0;
   flowers = [];
+  document.getElementById("startButton").classList.add("hidden"); // Hide the button
   gameInterval = setInterval(drawFlowers, 100);
   flowerInterval = setInterval(spawnFlower, 1000);
   setTimeout(stopWhackGame, 30000); // Game lasts 30 seconds
@@ -95,6 +125,7 @@ function stopWhackGame() {
   clearInterval(gameInterval);
   clearInterval(flowerInterval);
   alert("Game over! Final score: " + score);
+  document.getElementById("startButton").classList.remove("hidden"); // Show the button again
 }
 
 // Add event listener to start button
